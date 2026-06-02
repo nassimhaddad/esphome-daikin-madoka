@@ -1,0 +1,109 @@
+esphome:
+  name: daikin-madoka
+  friendly_name: Daikin Madoka
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+external_components:
+  - source: github://Petapton/esphome@madoka
+    components: [daikin_madoka]
+
+logger:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  reboot_timeout: 15min      # reboot if WiFi is lost this long
+  ap:
+    ssid: "Daikin-Madoka Fallback"
+    password: !secret fallback_password
+
+captive_portal:
+
+# ---- Bluetooth to the Madoka (your tested config) ----
+esp32_ble_tracker:
+
+esp32_ble:
+  io_capability: display_yes_no
+
+ble_client:
+  - mac_address: EC:47:0C:EA:22:53
+    id: madoka_ble
+
+# ---- The thermostat entity (your tested config) ----
+climate:
+  - platform: daikin_madoka
+    name: "Madoka Climate"
+    ble_client_id: madoka_ble
+    update_interval: 60s
+
+# ---- MQTT to flespi over TLS ----
+mqtt:
+  broker: mqtt.flespi.io
+  port: 8883
+  username: !secret flespi_token
+  # no password line
+  topic_prefix: daikin
+  certificate_authority: |
+    -----BEGIN CERTIFICATE-----
+    MIIFUTCCBDmgAwIBAgIQdR4/VknnTLv2nQAmtnyqjDANBgkqhkiG9w0BAQwFADBX
+    MQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTEQMA4GA1UE
+    CxMHUm9vdCBDQTEbMBkGA1UEAxMSR2xvYmFsU2lnbiBSb290IENBMB4XDTE5MDYx
+    OTAwMDAwMFoXDTI4MDEyODEyMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBS
+    b290IENBIC0gUjYxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2Jh
+    bFNpZ24wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQCVB+hzymb57BTK
+    ezz3DQjxtEULLIK0SMbrWzyug7hBkjMUpG9/6SrMxrCIa8W2idHGsv8UzlEUIexK
+    3RtaxtaH7k06FQbtZGYLkoDKRN5zlE7zp4l/T3hjCMgSUG1CZi9NuXkoTVIaihqA
+    txmBDn7EirxkTCEcQ2jXPTyKxbJm1ZCatzEGxb7ibTIGph75ueuqo7i/voJjUNDw
+    GInf5A959eqiHyrScC5757yTu21T4kh8jBAHOP9msndhfuDqjDyqtKT285VKEgdt
+    /Yyyic/QoGF3yFh0sNQjOvddOsqi250J3l1ELZDxgc1Xkvp+vFAEYzTfa5MYvms2
+    sjnkrCQ2t/DvthwTV5O23rL44oW3c6K4NapF8uCdNqFvVIrxclZuLojFUUJEFZTu
+    o8U4lptOTloLR/MGNkl3MLxxN+Wm7CEIdfzmYRY/d9XZkZeECmzUAk10wBTt/Tn7
+    g/JeFKEEsAvp/u6P4W4LsgizYWYJarEGOmWWWcDwNf3J2iiNGhGHcIEKqJp1HZ46
+    hgUAntuA1iX53AWeJ1lMdjlb6vmlodiDD9H/3zAR+YXPM0j1ym1kFCx6WE/TSwhJ
+    xZVkGmMOeT31s4zKWK2cQkV5bg6HGVxUsWW2v4yb3BPpDW+4LtxnbsmLEbWEFIoA
+    GXCDeZGXkdQaJ783HjIH2BRjPChMrwIDAQABo4IBIjCCAR4wDgYDVR0PAQH/BAQD
+    AgEGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFK5sBaOTE+Ki5+LXHNbH8H/I
+    Z1OgMB8GA1UdIwQYMBaAFGB7ZhpFDZfKiVAvfQTNNKj//P1LMD0GCCsGAQUFBwEB
+    BDEwLzAtBggrBgEFBQcwAYYhaHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vcm9v
+    dHIxMDMGA1UdHwQsMCowKKAmoCSGImh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
+    cm9vdC5jcmwwRwYDVR0gBEAwPjA8BgRVHSAAMDQwMgYIKwYBBQUHAgEWJmh0dHBz
+    Oi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMA0GCSqGSIb3DQEBDAUA
+    A4IBAQDHrE3fEsZgYRw59I03e5wt03B45il4hAHmquLc33pbkGZn6r3GgoKVzvwC
+    aBgtl6Jp93gZD8G5UjAFLj840jWDhOP7KSX6Q7rGjOsWNFFDJJLDUKQeJpB1PTRu
+    HqVI15zxiCl/VCP7mbTW7X/pILaFOPO+T0Qj+TUOU37WOjk6wdeyyOFiDhKSwH2Y
+    VE4YlAo0R10Jo3uNnSCFBgPw7gy1xt1+ajCbnzZYpQNXFy/0Lp9h3JOClE7TGvli
+    FUazCjxvhHm5YWqulA51wFT2K9LRiiEWw3UJAgTTmxASitVHHLb3erkETk6SCwGv
+    OG1eD0qLwuSeARZmhw3xFOCvMHeQ
+    -----END CERTIFICATE-----
+
+debug:
+  update_interval: 60s
+
+sensor:
+  - platform: debug
+    free:
+      name: "Heap Free"
+    block:
+      name: "Heap Max Block"
+    loop_time:
+      name: "Loop Time"
+  - platform: uptime
+    name: "Uptime"
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+text_sensor:
+  - platform: debug
+    reset_reason:
+      name: "Restart Reason"
+
+

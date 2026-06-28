@@ -13,9 +13,8 @@ ESP32 project that bridges a **Daikin Madoka** BLE thermostat to MQTT, built wit
 | File | Description |
 |---|---|
 | `daikin-madoka.yaml` | Main config — flespi MQTT broker, ESP-IDF framework |
-| `madoka-bridge v3.yaml` | Alternative config — HiveMQ broker, Arduino framework, local web UI |
-| `madoka-bridge v1/v2.yaml` | Earlier iterations |
-| `daikin-madoka v1.yaml` | Earlier iteration |
+
+Older iterations (`madoka-bridge v1–v3.yaml`, `daikin-madoka v1.yaml`) are kept in [`archive/`](archive/) for reference.
 
 ## Hardware
 
@@ -24,14 +23,20 @@ ESP32 project that bridges a **Daikin Madoka** BLE thermostat to MQTT, built wit
 
 ## Setup
 
-1. Install ESPHome: `pip install esphome`
+1. Create a virtualenv and install ESPHome:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # fish: source .venv/bin/activate.fish
+   pip install esphome
+   ```
 2. Copy `secrets.yaml.example` to `secrets.yaml` and fill in your credentials:
    ```yaml
    wifi_ssid: "your-network"
    wifi_password: "your-password"
    ota_password: "choose-a-password"
    fallback_password: "choose-a-password"
-   flespi_token: "your-flespi-token"   # or hivemq_user / hivemq_pass
+   flespi_token: "your-flespi-token"
+   ha_api_key: "your-32-byte-base64-key"  # openssl rand -base64 32
    ```
 3. Update the BLE MAC address in the config to match your Madoka unit
 4. Flash: `esphome run daikin-madoka.yaml`

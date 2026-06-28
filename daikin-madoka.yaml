@@ -13,6 +13,10 @@ external_components:
 
 logger:
 
+api:
+  encryption:
+    key: !secret ha_api_key
+
 ota:
   - platform: esphome
     password: !secret ota_password
